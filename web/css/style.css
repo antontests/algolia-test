@@ -1,0 +1,55 @@
+#search_form .icon-remove {
+	display: inline-block;
+	opacity: 0.4;
+	margin: 12px 0px 0px -23px;
+	position: absolute;
+	cursor: pointer;
+	z-index: 100;
+}
+
+#search_form .btn-group button:first-child {
+	border-radius: 0px;
+}
+
+.thumbnails li {
+	display: inline-block;
+	float: none;
+	vertical-align: top;
+}
+
+.thumbnails .thumbnail img {
+	width: 260px;
+	height: 260px;
+}
+.thumbnails .thumbnail .caption a.item_name {
+	font-size: 120%;
+}
+.thumbnails .thumbnail .caption div {
+	margin-top: 3px;
+}
+
+#load_more {
+	margin: 20px 0px 40px 0px;
+}
+
+.no-result {
+	padding: 40px 0px;
+	text-align: center;
+}
+
+.ui-menu .ui-menu-item .ui-menu-item-wrapper {
+	border-bottom: 1px solid #dddddd;
+}
+.ui-menu .ui-menu-item em {
+	font-style: normal;
+	background-color: yellow;
+}
+.ui-menu .ui-menu-item img {
+	width: 30px;
+	float: left;
+	margin-right: 10px;
+}
+.ui-menu .ui-menu-item .item-category {
+	color: #aaaaaa;
+	margin-right: 3px;
+}

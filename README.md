@@ -1,2 +1,2 @@
 # algolia-test
-Algolia Test Task
+Algolia Test Task.

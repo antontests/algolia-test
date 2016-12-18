@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>App Store</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link href="/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/css/app.css" rel="stylesheet">
+	<link href="/css/animate.css" rel="stylesheet">
+	<link href="/css/style.css" rel="stylesheet">
+	<link href="/css/prettyCheckable.css" rel="stylesheet">
+
+	<link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
+	<link href="/css/jquery-ui.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div  class="navbar navbar-static-top">
+	<div class="navbar-inner">
+		<div class="container">
+			<a class="brand" href="/">App Store</a>
+		</div>
+	</div>
+</div>
+
+<div class="container">
+
+	<div id="search-section">
+		<div class="row">
+			<div class="span12">
+				<form id="search_form">
+					<div class="input-append">
+						<input type="text" class="span5 search-input" id="search" placeholder="Type here, we'll get you all the coolest apps right away" /><!--
+						--><i id="clear_search_query" class="icon-remove"></i>
+						<div class="btn-group">
+							<button type="button" class="btn" id="in_category_button">In Category</button>
+							<button type="submit" class="btn btn-blue">Find</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="span9 offset3">
+			<h1>Search results <small>(<span id="results_found_number">0</span> apps found)</small></h1>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="span3">
+			<div class="sidebar-nav">
+				<div class="base">
+					<ul class="nav nav-list" id="categories_list_container">
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="span9">
+			<div id="search_results"></div>
+			<button id="load_more" type="button" class="btn btn-block btn-blue">Load more</button>
+		</div>
+	</div>
+</div>
+
+<script id="categories-list-template" type="text/x-handlebars-template">
+	{{#if items}}
+		<li class="nav-header">Categories</li>
+		<li><a href="#">All Categories</a></li>
+		{{#each items as |item|}}
+		<li><a href="#{{uriencode item}}">{{{item}}}</a></li>
+		{{/each}}
+	{{else}}
+		<li>Sorry, no categories :(</li>
+	{{/if}}
+</script>
+
+<script id="autocomplete-item-template" type="text/x-handlebars-template">
+	<li data-value="{{item.name}}"><div class="clearfix">
+		<span class="item-category">{{{item.category}}}:</span>
+		<span class="item-name">{{{item._highlightResult.name.value}}}</span>
+	</div></li>
+</script>
+
+<script id="list-template" type="text/x-handlebars-template">
+	{{#if items}}
+	<ul class="thumbnails">
+		{{#each items as |item|}}<li class="span3">
+			<div class="thumbnail">
+				<a target="_blank" class="item-name" href="{{item.link}}"><img data-src="holder.js/260x260" src="{{item.image}}"></a>
+				<div class="caption">
+					<a target="_blank" href="{{item.link}}">{{{item.name}}}</a>
+					<div class="thumbnail-category"><a class="label label-success" href="#{{item.category}}">{{{item.category}}}</a></div>
+				</div>
+			</div>
+		</li>{{/each}}
+	</ul>
+	{{else}}
+	<h3 class="no-result">Sorry, nothing found :(</h3>
+	{{/if}}
+</script>
+
+<script src="/js/jquery.js"></script>
+<script src="/js/jquery-ui.min.js"></script>
+<script src="/js/handlebars-v4.0.5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script>
+<script src="/js/main.js"></script>
+
+</body>
+</html>
