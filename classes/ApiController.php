@@ -28,12 +28,45 @@ class ApiController extends Component {
 	}
 
 	/**
+	 * Renders the response and terminates the script execution.
+	 * @param mixed $data Can be omitted in the case when you need to send the empty response. Passing the empty string will cause the method to echo and render it.
+	 */
+	private function renderResponse() {
+		$args = func_get_args();
+		$empty_response = !count($args);
+		if (!$empty_response) {
+			$data = reset($args);
+		}
+
+		switch ($_SERVER['HTTP_ACCEPT']) {
+
+			case 'application/json':
+				header('Content-Type: application/json');
+				if (!$empty_response) {
+					echo json_encode($data);
+				}
+				break;
+
+			default:
+				$content_type = $_SERVER['HTTP_ACCEPT']=='text/html' ? 'text/html' : 'text/plain';
+				header('Content-Type: '.$content_type);
+
+				if (!$empty_response) {
+					echo is_array($data) ? http_build_query($data) : $data;
+				}
+				break;
+
+		}
+
+		exit(0);
+	}
+
+	/**
 	 * Sends response "201 Created".
 	 */
-	private function sendCreatedResponse($id) {
+	private function sendCreatedResponse($data) {
 		http_response_code(201);
-		echo $id;
-		exit(0);
+		$this->renderResponse($data);
 	}
 
 	/**
@@ -41,7 +74,7 @@ class ApiController extends Component {
 	 */
 	private function sendSuccessNoContentResponse() {
 		http_response_code(204);
-		exit(0);
+		$this->renderResponse();
 	}
 
 	/**
@@ -49,7 +82,7 @@ class ApiController extends Component {
 	 */
 	private function sendBadRequestResponse() {
 		http_response_code(400);
-		exit(0);
+		$this->renderResponse();
 	}
 
 	/**
@@ -62,13 +95,17 @@ class ApiController extends Component {
 		$json_data = file_get_contents('php://input');
 		$posted_object = json_decode($json_data, true);
 
-		if (empty($posted_object) || !is_array($posted_object)) {
+		if (
+			empty($posted_object)
+			|| !is_array($posted_object)
+			|| (array_keys($posted_object) === range(0, count($posted_object) - 1)) // is not an associative array
+		) {
 			$this->sendBadRequestResponse();
 		}
 
 		$response = $this->algolia_index->addObject($posted_object);
 		if ($response['objectID']) {
-			$this->sendCreatedResponse($response['objectID']);
+			$this->sendCreatedResponse([ 'objectID' => $response['objectID'] ]);
 		}
 		else {
 			$this->sendBadRequestResponse();

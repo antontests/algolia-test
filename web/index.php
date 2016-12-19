@@ -13,5 +13,6 @@ $autoloader->initAutoload();
 
 $app = \Framework\App::i();
 $app->getRouter()->registerControllerClass('/', '\IndexController');
+$app->getRouter()->registerControllerClass('/test_[^/]+/', '\IndexController');
 $app->getRouter()->registerControllerClass('/api/1/apps.*', '\ApiController');
 $app->run();
