@@ -1,6 +1,11 @@
 <?php
 namespace Framework;
 
+/**
+ * Class Autoloader
+ * A small autoload callback initialization wrapper class.
+ * @package Framework
+ */
 class Autoloader {
 	/**
 	 * @var string

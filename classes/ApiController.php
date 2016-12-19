@@ -7,7 +7,7 @@ use Framework\Component;
  */
 class ApiController extends Component {
 	const ALGOLIA_APPLICATION_ID = 'JS7TG4PFI2';
-	const ALGOLIA_ADMIN_API_KEY = 'd96d7a95a045d31194740a8f7b45b1c8';
+	const ALGOLIA_ADMIN_API_KEY = 'd96d7a95a045d31194740a8f7b45b1c8'; // ADMIN KEY! DO NOT SHOW IT TO ANYONE!
 	const ALGOLIA_INDEX_NAME = 'apps';
 
 	/**
@@ -92,18 +92,24 @@ class ApiController extends Component {
 	public function actionAdd() {
 		$this->initAlgoliaIndex();
 
+		// Getting the passed JSON object.
 		$json_data = file_get_contents('php://input');
 		$posted_object = json_decode($json_data, true);
 
+		// Validating the parsed JSON object.
 		if (
-			empty($posted_object)
+			json_last_error() !== JSON_ERROR_NONE
+			|| empty($posted_object)
 			|| !is_array($posted_object)
 			|| (array_keys($posted_object) === range(0, count($posted_object) - 1)) // is not an associative array
 		) {
 			$this->sendBadRequestResponse();
 		}
 
+		// Requesting the Algolia index to add the valid object.
 		$response = $this->algolia_index->addObject($posted_object);
+
+		// Sending back the response.
 		if ($response['objectID']) {
 			$this->sendCreatedResponse([ 'objectID' => $response['objectID'] ]);
 		}
@@ -119,7 +125,10 @@ class ApiController extends Component {
 	public function actionDelete($id) {
 		$this->initAlgoliaIndex();
 
+		// Requesting the Algolia index to delete the object with the given ID.
 		$response = $this->algolia_index->deleteObject($id);
+
+		// Sending back the response.
 		if ($response['deletedAt'] && $response['taskID']) {
 			$this->sendSuccessNoContentResponse();
 		}

@@ -45,8 +45,6 @@ class App extends Component {
 	 */
 	public function run() {
 		$router = $this->getRouter();
-		$controller = new \IndexController();
-
 		$router->runAction();
 	}
 }
