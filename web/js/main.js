@@ -316,9 +316,10 @@
          * Sets a number of found results to the interface number container.
          */
         setResultsFoundNumber: function (results_found) {
-            var self = this;
+            var self = this,
+                results_found_str = results_found==1 ? ' app' : ' apps';
 
-            self.elements.$results_found_number.html(results_found);
+            self.elements.$results_found_number.html(results_found+results_found_str);
         },
 
 
