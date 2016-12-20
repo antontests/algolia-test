@@ -91,7 +91,7 @@
 			<div class="thumbnail">
 				<a target="_blank" class="item-name" href="{{item.link}}"><img data-src="holder.js/260x260" src="{{item.image}}"></a>
 				<div class="caption">
-					<a target="_blank" href="{{item.link}}">{{{item.name}}}</a>
+					<a target="_blank" href="{{item.link}}">{{#if item._highlightResult.name.value}}{{{item._highlightResult.name.value}}}{{else}}{{{item.name}}}{{/if}}</a>
 					<div class="thumbnail-category"><a class="label label-success" href="#{{item.category}}">{{{item.category}}}</a></div>
 				</div>
 			</div>

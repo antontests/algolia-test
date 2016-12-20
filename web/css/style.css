@@ -112,6 +112,10 @@ body {
 .thumbnail .caption div {
 	margin-top: 3px;
 }
+.thumbnail em {
+	font-style: normal;
+	background-color: yellow;
+}
 
 
 .base {
