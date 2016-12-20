@@ -46,26 +46,32 @@
         initCategoriesListAndBindEvents: function () {
             var self = this;
 
+            // Sending the empty request to the Algolia index to fetch the entire list of the available categories in the response.
             self.algolia_index.search('', { facets: ['category'] }, function (error, result) {
                 var categories = [];
 
+                // Collecting the categories names in the array.
                 if (!error) {
                     for (var category_name in result.facets.category) {
                         categories.push(category_name);
                     }
                 }
 
+                // Rendering the categories filter based on the derived categories.
                 $('#categories_list_container').html(
                     self.templates.categories_list({ items: categories })
                 );
 
+                // Initializing the controller elements collection categories list fields.
                 self.elements.$categories = $('.sidebar-nav .nav-list li');
                 self.elements.$categories_links = $('.sidebar-nav .nav-list a');
 
+                // Binding handlers to the categories.
                 self.elements.$categories_links.click(function (event) {
                     self.interfaceSelectCategory(decodeURIComponent($(this).attr('href').substr(1)));
                 });
 
+                // If the category is selected — setting it to the UI.
                 self.markCategorySelected(self.current_category);
             });
         },
@@ -104,18 +110,22 @@
         initSearchInterfaceAndResults: function () {
             var self = this;
 
+            // Initializing the initial search input value.
             if (self.elements.$search_input.val()) {
                 self.current_query = self.elements.$search_input.val();
             }
 
+            // Initializing the category initial filtering.
             if (window.location.hash) {
                 self.current_category = decodeURIComponent(window.location.hash.substr(1));
             }
             self.markCategorySelected(self.current_category);
 
+            // Initializing the "In Category" search modifier initial state.
             self.searching_in_category = !!(self.current_query && self.current_category);
             self.elements.$in_category_button.toggleClass('active', self.searching_in_category);
 
+            // Rendering the initial search results.
             self.refreshSearchResults();
         },
 
@@ -125,6 +135,9 @@
         bindEvents: function () {
             var self = this;
 
+            // Initializing the jQueryUI autocomplete plugin to make it fetch the feed from Algolia index,
+            // render the autocomplete feed items with our template
+            // and perform the search after the item was selected from the feed.
             self.elements.$search_input.autocomplete({
                 minLength: 0,
                 delay: AUTOCOMPLETE_DELAY,
@@ -138,19 +151,23 @@
                     return $li.appendTo(ul);
                 };
 
+            // Clear search button.
             self.elements.$clear_search_query_button.click(function (event) {
                 self.interfaceClearSearchQuery();
             });
 
+            // In Category search modifier button.
             self.elements.$in_category_button.click(function (event) {
                 self.interfaceToggleSearchingInCategory();
             });
 
+            // Search form submit.
             self.elements.$search_form.submit(function (event) {
                 event.preventDefault();
                 self.interfaceSubmitSearchForm();
             });
 
+            // "Pagination" button.
             self.elements.$load_more_button.click(function (event) {
                 self.interfaceLoadMore();
             });
@@ -163,6 +180,7 @@
         bindSearchItemsEvents: function (items) {
             var self = this;
 
+            // Binding the category selection to the search results categories labels.
             $(items).find('.thumbnail-category a').click(function (event) {
                 self.interfaceSelectCategory(decodeURIComponent($(this).attr('href').substr(1)));
             });
@@ -186,7 +204,7 @@
         /**
          * Fetches the search results and calls the given response_callback passing the search_results array as a parameter.
          * @param request The search query string.
-         * @param parameters Object with the Algolia search parameters.
+         * @param parameters Object with the Algolia search parameters. Can be omitted.
          * @param response_callback A closure to be called after the search request is completed.
          */
         fetchSearchResults: function (request, parameters, response_callback) {
@@ -199,21 +217,27 @@
                 default_parameters.filters = 'category:"'+self.current_category+'"';
             }
 
+            // To make it possible to omit the "parameters" param.
             if ($.isFunction(parameters)) {
                 response_callback = parameters;
                 parameters = {};
             }
 
+            // Compiling the resulting list of the search parameters.
             var search_options = $.extend(default_parameters, parameters);
 
+            // Performing the Algolia index search.
             self.algolia_index.search(request, search_options, function (error, result) {
                 var search_results = [];
 
                 if (!error) {
+                    // After each search it's necessary to save the properties of the fetched results to update the UI properly.
                     self.setResultsFoundNumber(result.nbHits);
                     self.current_pages_number = result.nbPages;
                     self.pages_loaded = result.page + 1;
 
+                    // Preparing the search results items object to be passed to the response_callback
+                    // by replacing the empty image paths with the image placeholder path.
                     search_results = result.hits;
                     for (var ii in search_results) {
                         if (!search_results[ii].image) {
@@ -240,9 +264,13 @@
                 search_options.filters = 'category:"'+self.current_category+'"';
             }
 
+            // Performing the Algolia index search.
             self.algolia_index.search(request.term, search_options, function (error, result) {
                 var search_results = result.hits;
 
+                // Preparing the "value" field of the items to make the jQueryUI autocomplete
+                // be able to place the correct value in the search input after user chooses
+                // the item from the autocomplete field.
                 for (var ii in search_results) {
                     search_results[ii].value = self.htmlEntityDecode(search_results[ii].name);
                 }
@@ -258,9 +286,12 @@
         renderSearchResults: function (items) {
             var self = this;
 
+            // Appending the search results HTML to the search results container.
             self.elements.$search_results.append(
                 self.templates.list({ items: items })
             );
+
+            // Binding the necessary event handlers to these items.
             self.bindSearchItemsEvents(self.elements.$search_results.children());
         },
 
@@ -273,9 +304,16 @@
 
             self.pages_loaded = 0;
 
+            // Fetching the first page of the results from the index.
             self.fetchSearchResults(self.current_query, { page: 0 }, function (search_results) {
+                // In this case, when we fetch the first page, we have to explicitly empty the search results container,
+                // because the search results rendering doesn't do that by default.
                 self.elements.$search_results.empty();
+
+                // Rendering the fetched results to the search results container.
                 self.renderSearchResults(search_results);
+
+                // Refreshing the visibility of the "pagination" button.
                 self.refreshLoadMoreButtonState();
             });
         },
@@ -286,8 +324,12 @@
         appendNewSearchResultsPage: function () {
             var self = this;
 
+            // Fetching the next page of the results from the index.
             self.fetchSearchResults(self.current_query, { page: self.pages_loaded }, function (search_results) {
+                // Rendering the fetched results to the search results container.
                 self.renderSearchResults(search_results);
+
+                // Refreshing the visibility of the "pagination" button.
                 self.refreshLoadMoreButtonState();
             });
         },
@@ -298,6 +340,7 @@
         markCategorySelected: function (category) {
             var self = this;
 
+            // Unmarking all categories and marking only the selected one.
             self.elements.$categories.removeClass('active');
             self.elements.$categories_links.filter('[href="#'+category+'"]').parent().addClass('active');
         },
@@ -309,6 +352,8 @@
             var self = this,
                 visible = self.pages_loaded < self.current_pages_number;
 
+            // The button is visible if the number of the loaded pages is LESS than the number of pages
+            // in the search results given by the Algolia API.
             self.elements.$load_more_button.toggle(visible);
         },
 
@@ -317,9 +362,9 @@
          */
         setResultsFoundNumber: function (results_found) {
             var self = this,
-                results_found_str = results_found==1 ? ' app' : ' apps';
+                results_found_str = (results_found == 1) ? ' app' : ' apps';
 
-            self.elements.$results_found_number.html(results_found+results_found_str);
+            self.elements.$results_found_number.html(results_found + results_found_str);
         },
 
 
@@ -334,6 +379,8 @@
         interfaceClearSearchQuery: function () {
             var self = this;
 
+            // Clearing the UI search string value and the corresponding controller property,
+            // and then refreshing the search results.
             self.current_query = '';
             self.elements.$search_input.val('');
             self.refreshSearchResults();
@@ -345,6 +392,7 @@
         interfaceToggleSearchingInCategory: function () {
             var self = this;
 
+            // Inverting the controller property value and the state of the class on the button.
             self.elements.$in_category_button.toggleClass('active');
             self.searching_in_category = !self.searching_in_category;
         },
@@ -355,13 +403,17 @@
         interfaceSubmitSearchForm: function () {
             var self = this;
 
+            // Synchronizing the UI input value and the controller property value.
             self.current_query = self.elements.$search_input.val();
 
+            // If it's not explicitly set by the "In Category" button we clear the value of the chosen category
+            // and perform the search in all categories.
             if (!self.searching_in_category) {
                 self.current_category = '';
                 self.markCategorySelected(self.current_category);
             }
 
+            // Fetching and rendering the results.
             self.refreshSearchResults();
         },
 
@@ -371,13 +423,20 @@
         interfaceSelectCategory: function (category) {
             var self = this;
 
+            // If it's not explicitly set by the "In Category" button we clear the value of the search input
+            // and perform the search with only the category filter.
             if (!self.searching_in_category) {
                 self.current_query = '';
                 self.elements.$search_input.val('');
             }
+
+            // saving the passed value in the controller property.
             self.current_category = category;
 
+            // Fetching and rendering the results.
             self.refreshSearchResults();
+
+            // Setting the UI display the category choice.
             self.markCategorySelected(category);
         },
 
@@ -394,16 +453,18 @@
          * Runs the initialization of the interface.
          */
         run: function () {
+            // With no Handlebars present the UI cannot be rendered, so there's no point in going further without.
             if (Handlebars===undefined) {
                 console.error('Handlebars module required for this page hasn\'t been found.');
                 return;
             }
 
+            // The order of the initialization methods calls matters.
             this.initAlgoliaIndex();
             this.initHandlebars();
             this.initTemplates();
-            this.initCategoriesListAndBindEvents();
             this.initElements();
+            this.initCategoriesListAndBindEvents();
             this.bindEvents();
             this.initSearchInterfaceAndResults();
         }
