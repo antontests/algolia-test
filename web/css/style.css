@@ -213,6 +213,16 @@ input[type="color"],
    Custom Styles
 ----------------------------------------- */
 
+#algolia_logo {
+	display: inline-block;
+	margin-top: 13px;
+}
+#algolia_logo img {
+	width: 100px;
+	margin-bottom: -6px;
+	vertical-align: baseline;
+}
+
 #search-section {
 	background: #F0F0F0 url('../img/bg-search.png') repeat -70% 0;margin: 8px 0px 19px 1px;
 	height: auto;

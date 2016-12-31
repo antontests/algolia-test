@@ -10,7 +10,7 @@ This is my implementation of the test task. Let me explain a little bit what it 
 ### Server
 The combination the whole thing works with here — http://algolia-test.anton-kazakov.ru — is Nginx+PHP-FPM (PHP 7.0) with the gzip compression.
 ### Back-end
-The back-end is a hand-written tiny framework with RegEx-based routing (including the request method type restrictions) and PSR-0 autoload. As even any microframework would be too bulky for this task, it was clear that it required something like this. I tried to make the clear comments (may be even too many clear comments in some places :)) in the code where necessary so it has to be fairly readable and understanable.
+The back-end is a hand-written tiny framework with RegEx-based routing (including the request method type restrictions) and PSR-0 autoload. As even any microframework would be too bulky for this task, it was clear that it required something like this. I tried to make the clear comments (may be even too many clear comments in some places :)) in the code where necessary so it has to be fairly readable and understandable.
 ### Front-end
 As the UI was one of the major values of the task requirements, I picked up the neat **Bootstrap** theme (to save time mostly) and removed everything that wasn't necessary from it. Then I considered the applicability of the ReactJS for this UI and, after giving it a serious thought, decided not to use it because the task seemed to be too simple to require React. But nevertheless I used the **Handlebars** templates engine to simplify the client-side rendering of the UI parts.
 
